@@ -6,7 +6,6 @@
 <title>PS-20 Pillar Drilling Machine — Info Sheet / माहिती पत्रक</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --amber:#d97706; --amber-dark:#92400e; --blue:#1d4ed8; --blue-light:#eff6ff;
@@ -87,32 +86,29 @@
   .safety li::before{content:"⚠";position:absolute;left:0;top:8px;color:var(--red);font-size:16px;}
   .safety li .mr-text{margin-top:3px;}
 
-  .qr-section{
-    background:#0f172a;color:#fff;border-radius:16px;padding:22px;text-align:center;
-  }
-  .qr-section h2{justify-content:center;color:#facc15;}
-  #qrcode{display:inline-block;background:#fff;padding:12px;border-radius:12px;margin:10px 0;}
-  .qr-section p{font-size:13px;color:#cbd5e1;max-width:520px;margin:6px auto;}
-  .qr-section p.mr{font-family:'Noto Sans Devanagari',sans-serif;}
-  .btn{
-    background:#f59e0b;color:#111;border:none;padding:10px 22px;border-radius:999px;
-    font-weight:700;cursor:pointer;font-size:14px;margin-top:10px;
-  }
-  .btn:hover{background:#fbbf24;}
-
   footer{text-align:center;font-size:12px;color:#94a3b8;margin-top:24px;}
   footer .mr{font-family:'Noto Sans Devanagari',sans-serif;display:block;margin-top:4px;}
 
-  #print-sticker{display:none;}
-  @media print{
-    body *{visibility:hidden;}
-    #print-sticker, #print-sticker *{visibility:visible;}
-    #print-sticker{display:block;position:fixed;top:0;left:0;width:100%;text-align:center;padding-top:20px;}
-    #print-sticker img,#print-sticker canvas{width:220px;height:220px;}
-    #print-sticker h3{margin:8px 0 0;font-size:17px;}
-    #print-sticker h3.mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:16px;margin:2px 0;}
-    #print-sticker p{margin:2px 0;font-size:12px;}
+  /* ===== Content protection ===== */
+  html, body {
+    -webkit-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
   }
+  img, svg, canvas {
+    -webkit-user-drag: none; user-drag: none;
+    pointer-events: none;
+  }
+  .protect-watermark{
+    position:fixed; inset:0; width:100vw; height:100vh;
+    pointer-events:none; overflow:hidden; z-index:99999;
+  }
+  .protect-watermark span{
+    position:absolute; color:rgba(15,23,42,0.10);
+    font-size:20px; font-weight:700; white-space:nowrap;
+    transform:rotate(-28deg); font-family:'Noto Sans',sans-serif;
+  }
+
 </style>
 </head>
 <body>
@@ -266,42 +262,74 @@
     </ul>
   </section>
 
-  <section class="qr-section card">
-    <h2>📱 Scan This QR With Your Phone <span class="mr-sub">/ फोनने QR स्कॅन करा</span></h2>
-    <div id="qrcode"></div>
-    <p>This QR code links straight to this page online. Point any phone camera at it — it will open this exact colorful page (in your phone's browser) with full manufacturer, specs, uses and safety details.</p>
-    <p class="mr">हा QR कोड थेट या ऑनलाइन पेजशी जोडलेला आहे. कोणत्याही फोन कॅमेऱ्याने स्कॅन करा — फोनच्या ब्राउझरमध्ये हेच रंगीत पेज उघडेल, ज्यात संपूर्ण उत्पादक, स्पेसिफिकेशन्स, उपयोग व सुरक्षा माहिती असेल.</p>
-    <p style="font-size:12px;color:#94a3b8;">🔗 kakademule1.github.io/Pillar-Type-Drill-Machine</p>
-    <button class="btn" onclick="window.print()">🖨️ Print QR Sticker / QR स्टिकर प्रिंट करा</button>
-  </section>
-
   <footer>
     Generated info sheet for workshop/lab use • Verify nameplate data periodically for accuracy
     <span class="mr">वर्कशॉप/लॅब वापरासाठी तयार केलेली माहिती पत्रक • अचूकतेसाठी नेमप्लेटवरील माहिती वेळोवेळी तपासा</span>
   </footer>
 </div>
 
-<!-- Hidden print-only sticker -->
-<div id="print-sticker">
-  <div id="qrcode-print"></div>
   <h3>PILLAR DRILL MACHINE — PS-20</h3>
   <h3 class="mr">पिलर ड्रिल मशीन — PS-20</h3>
   <p>P. Parmar Machine Tools, Bhavnagar | Scan for full details</p>
 </div>
 
 <script>
-  const qrText = "https://kakademule1.github.io/Pillar-Type-Drill-Machine/";
+  // ===== Content protection: watermark + copy/save/devtools blocking =====
+  (function(){
+    var WATERMARK_TEXT = "Dinesh@Fitter";
 
-  new QRCode(document.getElementById("qrcode"), {
-    text: qrText, width: 220, height: 220,
-    colorDark: "#111827", colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
-  });
-  new QRCode(document.getElementById("qrcode-print"), {
-    text: qrText, width: 220, height: 220,
-    colorDark: "#111827", colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
-  });
+    // Tiled watermark overlay (visible in any screenshot)
+    var wm = document.createElement('div');
+    wm.className = 'protect-watermark';
+    wm.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(wm);
+
+    function paintWatermark(){
+      wm.innerHTML = '';
+      var stepX = 240, stepY = 150;
+      var w = window.innerWidth + stepX;
+      var h = window.innerHeight + stepY;
+      for (var y = -stepY; y < h; y += stepY){
+        for (var x = -stepX; x < w; x += stepX){
+          var s = document.createElement('span');
+          s.textContent = WATERMARK_TEXT;
+          s.style.left = x + 'px';
+          s.style.top = y + 'px';
+          wm.appendChild(s);
+        }
+      }
+    }
+    paintWatermark();
+    window.addEventListener('resize', paintWatermark);
+
+    // Block right-click / long-press context menu
+    document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+    // Block text selection and drag (belt-and-braces alongside the CSS rule)
+    document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+    document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+    // Block copy/cut
+    document.addEventListener('copy', function(e){ e.preventDefault(); });
+    document.addEventListener('cut', function(e){ e.preventDefault(); });
+
+    // Block common save/copy/print/view-source/devtools shortcuts
+    document.addEventListener('keydown', function(e){
+      var k = e.key ? e.key.toLowerCase() : '';
+      var ctrlOrCmd = e.ctrlKey || e.metaKey;
+
+      var blockedCombo = ctrlOrCmd && ['s','c','p','u','x'].indexOf(k) !== -1;
+      var devtoolsKey = (e.key === 'F12') ||
+        (ctrlOrCmd && e.shiftKey && ['i','j','c'].indexOf(k) !== -1);
+
+      if (blockedCombo || devtoolsKey){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    });
+  })();
 </script>
+
 </body>
 </html>
